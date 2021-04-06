@@ -6,8 +6,8 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
-    # environment:
-    #   VIRTUAL_HOST: '${DOMAIN}'
+    environment:
+      VIRTUAL_HOST: '${DOMAIN}'
     volumes:
       - ./web/conf.d:/etc/nginx/conf.d
       - ./logs:/var/log/nginx
