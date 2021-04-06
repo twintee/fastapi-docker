@@ -25,6 +25,8 @@ RUN useradd -m -s /bin/bash -u $USER_UID $USER_NAME && \
     echo "${USER_NAME}:${PASSWD}" | chpasswd && \
     echo "${USER_NAME} ALL=(ALL) ALL" >> /etc/sudoers
 
+WORKDIR /app
+
 # FastAPIのソースコードなどをコンテナ内へCOPY
 COPY ./app /app/app
 COPY ./pyproject.toml /app/pyproject.toml
@@ -32,9 +34,9 @@ COPY ./pyproject.toml /app/pyproject.toml
 # COPY ./poetry.lock /app/poetry.lock
 RUN chown -R ${USER_NAME}:${USER_NAME} /app
 
-
 USER $USER_NAME
-WORKDIR /app
+COPY ./app/home/* /home/$USER_NAME
+
 # pip & poetry
 ENV PATH $PATH:/home/${USER_NAME}/.local/bin
 RUN python3 -m pip install --user --upgrade pip && \

@@ -5,6 +5,7 @@ import os
 from os.path import join, dirname, abspath, isdir
 import sys
 import shutil
+import argparse
 
 import mod.helper as fn
 
@@ -32,11 +33,10 @@ def main():
     dir_logs = join(dir_script, "log")
     if isdir(dir_logs):
         if fn.input_yn("remove log dirs? (y/*) :"):
-            shutil.rmtree(join(dir_script, "log"))
+            shutil.rmtree(dir_logs)
 
     # イメージリビルド
-    cmd=f"docker-compose up -d"
-    if fn.input_yn("rebuild image? (y/*) :"):
+    if args.build:
         for line in fn.cmd_lines(_cmd=f"docker rmi {params['IMAGE_NAME']}"):
             sys.stdout.write(line)
         for line in fn.cmd_lines(_cmd="docker-compose build", _encode='utf-8'):
@@ -54,11 +54,14 @@ def main():
 [info] started. access to follow url.
 http://{fn.local_ip()}
 or
-http://{params['VIRTUAL_HOST']}
+http://{params['DOMAIN']}
 """)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='set env params')
+    parser.add_argument('--build', '-b', help="(option) force build docker image.", action='store_true')
+    args = parser.parse_args()
 
     print("[info] initialize start.")
     main()
