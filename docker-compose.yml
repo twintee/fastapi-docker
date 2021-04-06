@@ -1,0 +1,33 @@
+version: '2'
+services:
+
+  web:
+    container_name: web
+    image: nginx:alpine
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    # environment:
+    #   VIRTUAL_HOST: ${VIRTUAL_HOST}
+    volumes:
+      - ./web/conf.d:/etc/nginx/conf.d
+    networks:
+      - fastapi_net
+
+  api:
+    build: ./api
+    image: ${IMAGE_NAME}:latest
+    container_name: api-app
+    expose:
+      - 8000
+    # volumes:
+    # - ./api/app:/app
+    mem_limit: ${MEM}
+    restart: always
+    networks:
+      - fastapi_net
+
+networks:
+  fastapi_net:
+    driver: bridge
