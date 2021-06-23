@@ -5,17 +5,20 @@
 dbのmasterノードとslaveノード（複数の設定が可能）
 
 ## 🌏 検証環境
+
 - ubuntu :20.04lts
 
 ## ⚙ 使用法
+
 - ノード生成
     1. (初回のみ)イメージ作成  
         `docker-compose build`
-    1. コンテナ生成
-        `python3 init.py`  
-        - 応答は基本'y'でボリュームやlogの削除は都度判断。dumpはスクリプトから制御しない。
-        - nodeの種類を切り替えたい場合`config.py`を事前に実行してから、生成スクリプトを実行。
-        - 1ホストでmaster/slave構成したい場合  
-        `python3 init.py all`  
+    1. 設定変更
+    * `.env`の修正
+        * PORT_API : fastapi用ポートフォワード先（初期値8000)
+        * DOMAIN : virtualhostの設定ドメイン（初期値fastapi.localhost)
+    1. コンテナ設定
+    `python3 init.py`  
+        - 
 
-- dbのホストを変更する場合`api/app/mysql/db.py`を修正
+- dbの接続先は`api/app/mysql/db.py`を修正
