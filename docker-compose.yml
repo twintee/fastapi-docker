@@ -1,13 +1,14 @@
-version: '2'
+version: '3'
 services:
 
   web:
     container_name: api-web
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "$PORT_API:80"
     environment:
       VIRTUAL_HOST: '${DOMAIN}'
+      TZ: 'Asia/Tokyo'
     volumes:
       - ./web/conf.d:/etc/nginx/conf.d
       - ./logs:/var/log/nginx
@@ -15,23 +16,26 @@ services:
       - api
     restart: always
     networks:
-      - proxy_net
+      - reactnet
 
   api:
     build:
       context: ./api
     image: ${IMAGE_NAME}:latest
+    environment:
+      TZ: 'Asia/Tokyo'
     container_name: api-app
     expose:
       - 8000
     volumes:
       - ./api/app:/app/app
+    command: "uvicorn app.main:app --reload --host 0.0.0.0"
     mem_limit: ${MEM}
     restart: always
     networks:
-      - proxy_net
+      - reactnet
 
 networks:
-  proxy_net:
+  reactnet:
     driver: bridge
     external: true

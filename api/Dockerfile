@@ -5,7 +5,9 @@ FROM $BASE_IMAGE
 RUN apt-get -y update && \
     apt-get install -y --no-install-recommends \
     build-essential \
-    openssl libssl-dev \
+    openssl \
+    libssl-dev \
+    libmariadb-dev-compat \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -28,17 +30,17 @@ RUN useradd -m -s /bin/bash -u $USER_UID $USER_NAME && \
 WORKDIR /app
 
 # FastAPIのソースコードなどをコンテナ内へCOPY
-COPY ./app /app/app
+# COPY ./app /app/app
 COPY ./pyproject.toml /app/pyproject.toml
 # local環境で使用しているpoetry.lockファイルがあればそれも追加する
 # COPY ./poetry.lock /app/poetry.lock
 RUN chown -R ${USER_NAME}:${USER_NAME} /app
 
 USER $USER_NAME
-COPY ./app/home/* /home/$USER_NAME
-
-# pip & poetry
+COPY ./app/home/* /home/$USER_NAME/
 ENV PATH $PATH:/home/${USER_NAME}/.local/bin
+
+# poetry & database & キャッシュ削除
 RUN python3 -m pip install --user --upgrade pip && \
     python3 -m pip install poetry --user && \
     poetry config virtualenvs.in-project true && \

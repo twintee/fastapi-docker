@@ -4,7 +4,12 @@ from os.path import isfile
 import subprocess
 import socket
 
-def input_yn(_txt):
+from sqlalchemy.sql.expression import false, true
+
+def input_yn(_txt, _yes=False):
+    if _yes:
+        print(f"{_txt}y")
+        return True
     _input = input(_txt).lower()
     if _input in ["y", "yes"]:
         return True
